@@ -1,0 +1,24 @@
+The following lines are a Telnet history. Commands alternate with responses from the
+server. First the name and the color are set and the game is started with 'play'.
+This is followed by movement commands in the order 'down','right', 'up', 'left'.
+Finally, the suicide is ordered and the connection is closed.
+
+
+nameHANSI
+ok
+typeblue
+ok
+play
+ok: the game begins when all players are ready
+move0;10
+ok
+move10;0
+ok
+move0;-10
+ok
+move-10;0
+ok
+kill
+ok
+quit
+ok
