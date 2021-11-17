@@ -10,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"golang.org/x/image/font/gofont/gomonobold"
+	"image"
 	"image/color"
 	"time"
 )
@@ -51,6 +52,7 @@ func RunGame(title string, screenWidth, screenHeight, gameSpeed int, world *core
 
 	// config window
 	ebiten.SetWindowTitle(title)
+	ebiten.SetWindowIcon([]image.Image{logoImage})
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowResizable(true)
 	ebiten.SetMaxTPS(gameSpeed) // default: 60

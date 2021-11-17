@@ -12,6 +12,7 @@ var (
 	bgImage     *ebiten.Image
 	blueImage   *ebiten.Image
 	grayImage   *ebiten.Image
+	logoImage   *ebiten.Image
 	orangeImage *ebiten.Image
 	purpleImage *ebiten.Image
 	redImage    *ebiten.Image
@@ -24,6 +25,7 @@ func init() {
 	bgImage = load("images/bg.png")
 	blueImage = load("images/blue.png")
 	grayImage = load("images/gray.png")
+	logoImage = load("images/logo.png")
 	orangeImage = load("images/orange.png")
 	purpleImage = load("images/purple.png")
 	redImage = load("images/red.png")
