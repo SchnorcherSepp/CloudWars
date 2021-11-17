@@ -5,8 +5,12 @@ import (
 	"CloudWars/remote"
 	"errors"
 	"fmt"
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/text"
+	"golang.org/x/image/font/gofont/gomonobold"
+	"image/color"
 	"time"
 )
 
@@ -170,16 +174,32 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	// DEBUG text
-	iteration, worldVapor, alive := g.world.Stats()
-	text := fmt.Sprintf("\n  round=%d, alive=%d, worldVapor=%.0f, maxUpdateTime=%v\n", iteration, alive, worldVapor, g.maxUpdateTime)
+	iteration, worldVapor, alive, winCondition, leader := g.world.Stats()
+	msg := fmt.Sprintf("\n  round=%d/%d, alive=%d, worldVapor=%.0f, maxUpdateTime=%v\n", iteration, g.world.MaxIterations(), alive, worldVapor, g.maxUpdateTime)
 	for _, c := range g.world.Clouds() {
 		if c.Player != "" {
 			if !c.IsDeath() {
-				text += fmt.Sprintf("  > %s: %.0f (%.0f%%)\n", c.Player, c.Vapor, c.Vapor/worldVapor*100)
+				msg += fmt.Sprintf("  > %s: %.0f (%.0f%%)\n", c.Player, c.Vapor, c.Vapor/worldVapor*100)
 			} else {
-				text += fmt.Sprintf("  > %s: dead\n", c.Player)
+				msg += fmt.Sprintf("  > %s: dead\n", c.Player)
 			}
 		}
 	}
-	ebitenutil.DebugPrint(screen, text)
+	ebitenutil.DebugPrint(screen, msg)
+
+	// PRINT WINNER
+	// font size is 44
+	// char height is 32px
+	// char width is 24px
+	if winCondition {
+		fnt, _ := truetype.Parse(gomonobold.TTF)
+		face := truetype.NewFace(fnt, &truetype.Options{Size: 44})
+
+		winnerMsg := fmt.Sprintf("Victory: %s", leader)
+		x := g.world.Width()/2 - 24/2*len(winnerMsg) - 20
+		y := g.world.Height()/2 - 32/2
+		clr := color.White
+
+		text.Draw(screen, winnerMsg, face, x, y, clr)
+	}
 }

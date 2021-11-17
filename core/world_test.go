@@ -54,15 +54,17 @@ func TestNewWorld(t *testing.T) {
 	w1.Update()
 
 	w2 := &World{
-		width:      111,
-		height:     222,
-		iteration:  1,
-		worldVapor: 703.94507, // random vapor (see seed 1337)
-		alive:      5,
-		clouds:     nil, // fix this
-		mux:        nil, // fix this
-		SimSpeedUp: 1,
-		gameSpeed:  60,
+		width:        111,
+		height:       222,
+		iteration:    1,
+		worldVapor:   703.94507, // random vapor (see seed 1337)
+		alive:        5,
+		winCondition: true,
+		leader:       "no player alive",
+		clouds:       nil, // fix this
+		mux:          nil, // fix this
+		SimSpeedUp:   1,
+		gameSpeed:    60,
 	}
 
 	// fix clout und mux

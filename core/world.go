@@ -19,9 +19,11 @@ type World struct {
 	gameSpeed int // how often per second will the server update (DEFAULT: 60)
 
 	// stats
-	iteration  uint64
-	worldVapor float32
-	alive      int
+	iteration    uint64
+	worldVapor   float32
+	alive        int
+	winCondition bool
+	leader       string
 
 	// cloud list
 	clouds []*Cloud
@@ -79,17 +81,24 @@ func (w *World) GameSpeed() int {
 	return w.gameSpeed
 }
 
+// MaxIterations returns the last interaction to trigger the win conditions (timeout: after 3 minutes)
+func (w *World) MaxIterations() uint64 {
+	return 3 * 60 * uint64(w.GameSpeed())
+}
+
 // Stats returns interesting world statistics.
 // iteration is the current game round (increases with every update).
 // worldVapor is the worldwide vapor.
 // alive shows how many objects there are in the world.
-func (w *World) Stats() (iteration uint64, worldVapor float32, alive int) {
+func (w *World) Stats() (iteration uint64, worldVapor float32, alive int, winCondition bool, leader string) {
 	w.mux.Lock()
 	defer w.mux.Unlock()
 
 	iteration = w.iteration
 	worldVapor = w.worldVapor
 	alive = w.alive
+	winCondition = w.winCondition
+	leader = w.leader
 	return
 }
 
@@ -129,14 +138,16 @@ func (w *World) Clone() *World {
 
 	// new world
 	ret := &World{
-		width:      w.width,
-		height:     w.height,
-		iteration:  w.iteration,
-		worldVapor: w.worldVapor,
-		alive:      w.alive,
-		clouds:     make([]*Cloud, 0, len(w.clouds)),
-		mux:        new(sync.Mutex),
-		SimSpeedUp: w.SimSpeedUp,
+		width:        w.width,
+		height:       w.height,
+		iteration:    w.iteration,
+		worldVapor:   w.worldVapor,
+		alive:        w.alive,
+		winCondition: w.winCondition,
+		leader:       w.leader,
+		clouds:       make([]*Cloud, 0, len(w.clouds)),
+		mux:          new(sync.Mutex),
+		SimSpeedUp:   w.SimSpeedUp,
 	}
 
 	// set clouds
@@ -260,8 +271,10 @@ func (w *World) Update() {
 	w.iteration++
 	w.worldVapor = worldVapor
 	w.alive = alive
+	w.winCondition, w.leader = w.isWinner()
 }
 
+// addCloud is a helper (not thread-safe)
 func (w *World) addCloud(c *Cloud) {
 	// generate uid
 	uid := make([]byte, 6)
@@ -274,18 +287,56 @@ func (w *World) addCloud(c *Cloud) {
 	w.clouds = append(w.clouds, c)
 }
 
+// isWinner returns whether the victory conditions have been met and who is currently in the lead.
+// The world statistics are also calculated.
+func (w *World) isWinner() (is bool, winner string) {
+	// get best player
+	var best *Cloud
+	for _, c := range w.clouds {
+		if c.Player != "" && !c.IsDeath() {
+			if best == nil {
+				best = c // set first player
+			} else {
+				if best.Vapor < c.Vapor {
+					best = c // set better player
+				}
+			}
+		}
+	}
+
+	// no player, no winner
+	if best == nil {
+		return true, "no player alive"
+	}
+
+	// timeout
+	if w.iteration > w.MaxIterations() {
+		return true, best.Player
+	}
+
+	// > 50 %
+	if best.Vapor/w.worldVapor*100 > 51 {
+		return true, best.Player
+	}
+
+	// default
+	return false, best.Player
+}
+
 //----  Serialisation  -----------------------------------------------------------------------------------------------//
 
 // define JsonWorld (export hidden vars)
 type jsonWorld struct {
-	Width      int
-	Height     int
-	GameSpeed  int
-	Iteration  uint64
-	WorldVapor float32
-	Alive      int
-	Clouds     []*Cloud
-	SimSpeedUp int
+	Width        int
+	Height       int
+	GameSpeed    int
+	Iteration    uint64
+	WorldVapor   float32
+	Alive        int
+	WinCondition bool
+	Leader       string
+	Clouds       []*Cloud
+	SimSpeedUp   int
 }
 
 // ToJson return the world as json string.
@@ -295,14 +346,16 @@ func (w *World) ToJson() string {
 
 	// init JsonWorld
 	ret := &jsonWorld{
-		Width:      w.width,
-		Height:     w.height,
-		GameSpeed:  w.gameSpeed,
-		Iteration:  w.iteration,
-		WorldVapor: w.worldVapor,
-		Alive:      w.alive,
-		Clouds:     w.clouds,
-		SimSpeedUp: w.SimSpeedUp,
+		Width:        w.width,
+		Height:       w.height,
+		GameSpeed:    w.gameSpeed,
+		Iteration:    w.iteration,
+		WorldVapor:   w.worldVapor,
+		Alive:        w.alive,
+		WinCondition: w.winCondition,
+		Leader:       w.leader,
+		Clouds:       w.clouds,
+		SimSpeedUp:   w.SimSpeedUp,
 	}
 
 	// serialisation
@@ -339,6 +392,8 @@ func (w *World) FromJson(str string) {
 	w.iteration = jw.Iteration
 	w.worldVapor = jw.WorldVapor
 	w.alive = jw.Alive
+	w.winCondition = jw.WinCondition
+	w.leader = jw.Leader
 	w.clouds = jw.Clouds
 	w.SimSpeedUp = jw.SimSpeedUp
 

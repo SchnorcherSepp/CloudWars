@@ -112,7 +112,7 @@ The game ends when a cloud unites more than 50% of the world's mass and can no l
 1) The client sends a command to the server as a single line of text.
 2) A command always consists of 4 characters followed by the payload without separators such as spaces.
 3) The server responds by sending a single line of text.
-4) A line of text must always be a string of ASCII characters terminated by a single, unix-style new line character: 
+4) A line of text must always be a string of ASCII characters terminated by a single, unix-style new line character:
    `'\n'`
 5) All integers represented as ASCII text.
 6) All floating point numbers are represented as ASCII text on the form 13.37

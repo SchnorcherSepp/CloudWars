@@ -46,7 +46,7 @@ func main() {
 	// worldIteration: increases with every server update
 	// worldVapor: vapor of all clouds together
 	// worldAlive: active clouds
-	worldIteration, worldVapor, worldAlive := world.Stats()
+	worldIteration, worldVapor, worldAlive, winCondition, leader := world.Stats()
 
 	// cloud list
 	var me *core.Cloud // your controlled cloud (find in list)
@@ -102,4 +102,6 @@ func main() {
 	_ = worldIteration
 	_ = worldVapor
 	_ = worldAlive
+	_ = winCondition
+	_ = leader
 }
