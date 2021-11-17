@@ -19,6 +19,7 @@ type Cloud struct {
 	Vapor  float32   // representing the amount of vapor in the cloud
 	Player string    // clouds controlled by a player
 	Color  string    // blue, red, orange, purple and gray (default: gray)
+	UID    string    // Unique Identifier (is set when the cloud is added to a world)
 }
 
 // NewCloud create a new Cloud.
@@ -56,7 +57,9 @@ func (c *Cloud) isIntersects(o *Cloud) bool {
 // clone creates a new instance of Position and initializes all its fields with exactly the contents.
 // Attention: The internal reference to the world is set to nil!
 func (c *Cloud) clone() *Cloud {
-	return NewCloud(nil, c.Pos.clone(), c.Vel.clone(), c.Vapor, c.Player, c.Color)
+	ret := NewCloud(nil, c.Pos.clone(), c.Vel.clone(), c.Vapor, c.Player, c.Color)
+	ret.UID = c.UID // set by world.addCloud()
+	return ret
 }
 
 //----  SETTER  ------------------------------------------------------------------------------------------------------//

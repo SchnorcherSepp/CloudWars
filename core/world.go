@@ -1,6 +1,8 @@
 package core
 
 import (
+	secRnd "crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -261,6 +263,14 @@ func (w *World) Update() {
 }
 
 func (w *World) addCloud(c *Cloud) {
+	// generate uid
+	uid := make([]byte, 6)
+	_, _ = secRnd.Read(uid)
+
+	// set uid
+	c.UID = base64.StdEncoding.EncodeToString(uid)
+
+	// add to list
 	w.clouds = append(w.clouds, c)
 }
 
