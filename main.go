@@ -1,10 +1,10 @@
 package main
 
 import (
+	"CloudWars/ai/simai"
 	"CloudWars/core"
 	"CloudWars/gui"
 	"CloudWars/remote"
-	"CloudWars/simai"
 	"bufio"
 	"flag"
 	"fmt"
