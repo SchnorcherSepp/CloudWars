@@ -138,16 +138,21 @@ func (w *World) Clone() *World {
 
 	// new world
 	ret := &World{
-		width:        w.width,
-		height:       w.height,
+		width:     w.width,
+		height:    w.height,
+		gameSpeed: w.gameSpeed,
+
 		iteration:    w.iteration,
 		worldVapor:   w.worldVapor,
 		alive:        w.alive,
 		winCondition: w.winCondition,
 		leader:       w.leader,
-		clouds:       make([]*Cloud, 0, len(w.clouds)),
-		mux:          new(sync.Mutex),
-		SimSpeedUp:   w.SimSpeedUp,
+
+		clouds: make([]*Cloud, 0, len(w.clouds)),
+		mux:    new(sync.Mutex),
+
+		SimSpeedUp: w.SimSpeedUp,
+		freeze:     w.freeze,
 	}
 
 	// set clouds
