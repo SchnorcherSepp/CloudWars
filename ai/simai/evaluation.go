@@ -8,7 +8,14 @@ import (
 
 func evaluation(actionsList []actions, me *core.Cloud) *action {
 
-	var best = new(action)
+	var best = &action{
+		Wind:             &core.Velocity{},
+		Strength:         0,
+		EvaluationPoints: -10000000,
+		ShortTerm:        actionResult{GainVapor: -10000000, GainSpeed: -10000000},
+		MidTerm:          actionResult{GainVapor: -10000000, GainSpeed: -10000000},
+		LongTerm:         actionResult{GainVapor: -10000000, GainSpeed: -10000000},
+	}
 
 	// preselection
 	for _, aa := range actionsList {
@@ -55,6 +62,9 @@ func evaluation(actionsList []actions, me *core.Cloud) *action {
 	// log action
 	if best.Strength > 0 {
 		fmt.Printf("%.0f Wind  for  %.0f Points    ", best.Strength, best.EvaluationPoints)
+		if best.EvaluationPoints < 0 {
+			fmt.Printf("escape!")
+		}
 		if best.ShortTerm.DeadEnemies > 0 || best.MidTerm.DeadEnemies > 0 {
 			fmt.Printf("KILL enemies!")
 		} else if best.LongTerm.DeadEnemies > 0 {
