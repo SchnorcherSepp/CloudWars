@@ -20,7 +20,7 @@ func RunSimAI(host, port, name, color string) {
 	var cpus = runtime.NumCPU()
 	var angleSteps = 360 / 90
 	var strengths = []float32{10, 50, 100, 200, 300}
-	var simSpeedUp = 5
+	var simSpeedUp = 10
 	var simInterval = 250 * time.Millisecond
 	//--------------------------------------------------
 

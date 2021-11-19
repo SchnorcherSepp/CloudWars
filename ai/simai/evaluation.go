@@ -45,9 +45,9 @@ func evaluation(actionsList []actions, me *core.Cloud) *action {
 
 			// +500 ein vernichteter feind
 			if a.ShortTerm.DeadEnemies > 0 {
-				a.EvaluationPoints += 100
+				a.EvaluationPoints += 50
 			} else if a.MidTerm.DeadEnemies > 0 {
-				a.EvaluationPoints += 60
+				a.EvaluationPoints += 40
 			} else if a.LongTerm.DeadEnemies > 0 {
 				a.EvaluationPoints += 25
 			}
