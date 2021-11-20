@@ -69,6 +69,7 @@ func (c *Cloud) clone() *Cloud {
 func (c *Cloud) update() {
 	// ignore death cloud
 	if c.IsDeath() {
+		c.Vapor = 0 // be sure that the cloud is really destroyed
 		return
 	}
 
