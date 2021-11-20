@@ -186,19 +186,20 @@ func handleRequest(conn net.Conn, ser *server) {
 						if comWrite(conn, "err: invalid input: use 'float32;float32'") {
 							break // exit loop and close connection
 						}
-					}
-					// parse value
-					x, _ := strconv.ParseFloat(a[0], 32)
-					y, _ := strconv.ParseFloat(a[1], 32)
-					v := core.NewVelocity(float32(x), float32(y))
-					// set wind
-					if !ser.world.Move(me, v) {
-						if comWrite(conn, "err: invalid move") {
-							break // exit loop and close connection
-						}
 					} else {
-						if comWrite(conn, "ok") {
-							break // exit loop and close connection
+						// parse value
+						x, _ := strconv.ParseFloat(a[0], 32)
+						y, _ := strconv.ParseFloat(a[1], 32)
+						v := core.NewVelocity(float32(x), float32(y))
+						// set wind
+						if !ser.world.Move(me, v) {
+							if comWrite(conn, "err: invalid move") {
+								break // exit loop and close connection
+							}
+						} else {
+							if comWrite(conn, "ok") {
+								break // exit loop and close connection
+							}
 						}
 					}
 				}
